@@ -1,0 +1,44 @@
+# Docker Compose file Reference (https://docs.docker.com/compose/compose-file/)
+version: '3'
+
+#Define services
+services:
+
+  #PostgreSQL Database for the application
+  cleaningapp-postgres:
+    image: "postgres:9.6-alpine"
+    container_name: cleaningapp-postgres
+    #Volume mounted for database for the storage
+    volumes:
+      - cleaningapp-data:/var/lib/postgresql/data
+    expose:
+      - 5433
+    ports:
+      - 5433:5433 # Forward the exposed port 5433 on the container to port 5433 on the host machine
+    command: -p 5433
+    #Environment variable for DB name, user and password
+    environment:
+      - POSTGRES_DB=cleaningapp
+      - POSTGRES_USER=cleaningapp
+      - POSTGRES_PASSWORD=cleaningapp
+
+  #Back-end Spring Boot Application
+  cleaningapp:
+    #The docker file in cleaningapp-app build the jar and provides the docker image with the following name.
+    build: ./
+    container_name: cleaningapp
+
+    #Environment variables for Spring Boot Application.
+    environment:
+      - DB_SERVER=cleaningapp-postgres
+      - POSTGRES_DB=cleaningapp
+      - POSTGRES_USER=cleaningapp
+      - POSTGRES_PASSWORD=cleaningapp
+    ports:
+      - 8080:8080 # Forward the exposed port 8080 on the container to port 8080 on the host machine
+    links:
+      - cleaningapp-postgres
+
+#Volumes for DB data
+volumes:
+  cleaningapp-data:
