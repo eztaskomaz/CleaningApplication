@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -30,12 +31,8 @@ public class AvailabilityService {
         if (bookingList.isEmpty()) {
             throw new CleaningAppBusinessException("booking.is.not.available.for.booking.date", bookingDate.toString());
         }
-        return new PageableResult<>(
-                bookingList.getTotalElements(),
-                page,
-                size,
-                bookingList.getContent().stream().map(AvailableStaffTimeDTO::from).collect(Collectors.toList())
-        );
+        List<AvailableStaffTimeDTO> availableStaffTimeDTOList = bookingList.getContent().stream().map(AvailableStaffTimeDTO::from).collect(Collectors.toList());
+        return new PageableResult<>(bookingList.getTotalElements(), page, size, availableStaffTimeDTOList);
     }
 
     @Transactional(readOnly = true)
@@ -45,12 +42,8 @@ public class AvailabilityService {
             throw new CleaningAppBusinessException("booking.is.not.available", request.getBookingDate().toString(), request.getStartTime().toString());
         }
         Set<Staff> staffSet = bookingList.getContent().stream().map(Booking::getStaff).collect(Collectors.toSet());
-        return new PageableResult<>(
-                bookingList.getTotalElements(),
-                request.getPage(),
-                request.getSize(),
-                staffSet.stream().map(AvailableStaffDTO::from).collect(Collectors.toList())
-        );
+        List<AvailableStaffDTO> availableStaffDTOList = staffSet.stream().map(AvailableStaffDTO::from).collect(Collectors.toList());
+        return new PageableResult<>(bookingList.getTotalElements(), request.getPage(), request.getSize(), availableStaffDTOList);
     }
 
 }

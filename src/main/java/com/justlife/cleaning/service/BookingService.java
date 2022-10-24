@@ -1,11 +1,6 @@
 package com.justlife.cleaning.service;
 
-import com.justlife.cleaning.common.exception.CleaningAppBusinessException;
-import com.justlife.cleaning.common.exception.CleaningAppDomainNotFoundException;
 import com.justlife.cleaning.model.Booking;
-import com.justlife.cleaning.model.Customer;
-import com.justlife.cleaning.model.Staff;
-import com.justlife.cleaning.model.Vehicle;
 import com.justlife.cleaning.model.pojo.CheckTimeSlotFilterRequest;
 import com.justlife.cleaning.repository.BookingRepository;
 import org.slf4j.Logger;
@@ -27,11 +22,15 @@ public class BookingService {
     private final Logger LOGGER = LoggerFactory.getLogger(BookingService.class);
 
     private final BookingRepository bookingRepository;
-    private final StaffService staffService;
+    private final BookingAddService bookingAddService;
+    private final BookingUpdateService bookingUpdateService;
 
-    public BookingService(BookingRepository bookingRepository, StaffService staffService) {
+    public BookingService(BookingRepository bookingRepository,
+                          BookingAddService bookingAddService,
+                          BookingUpdateService bookingUpdateService) {
         this.bookingRepository = bookingRepository;
-        this.staffService = staffService;
+        this.bookingAddService = bookingAddService;
+        this.bookingUpdateService = bookingUpdateService;
     }
 
     @Transactional(readOnly = true)
@@ -55,52 +54,15 @@ public class BookingService {
     @Transactional
     public void addBooking(Booking booking, List<Long> staffIdList, Long customerId) {
         LOGGER.info("Bookings are creating. Booking info: " + booking + " customerId: " + customerId + " staffIdList: " + staffIdList);
-        checkAllStaffAreInTheSameVehicle(staffIdList);
-        prepareAndSaveBookings(booking, customerId, staffIdList);
+        bookingAddService.add(booking, staffIdList, customerId);
         LOGGER.info("Bookings are created. Booking info: " + booking + " customerId: " + customerId + " staffIdList: " + staffIdList);
     }
 
     @Transactional
     public void updateBooking(Booking oldBooking, Booking newBooking, List<Long> staffIdList, Long customerId) {
         LOGGER.info("Bookings are updating. Booking info: " + oldBooking + " customerId: " + customerId);
-        List<Booking> oldBookingList = bookingRepository.findByBookingDateAndStaffIdInAndCustomerAndStartTimeBetween(
-                oldBooking.getBookingDate(), staffIdList, customerId, oldBooking.getStartTime(), oldBooking.getEndTime());
-        Integer oldDurationSlot = oldBooking.getEndTime().minusHours(oldBooking.getStartTime().getHour()).getHour() + 1;
-        if (oldBookingList.isEmpty() || oldBookingList.size() != (staffIdList.size() * oldDurationSlot)) {
-            throw new CleaningAppDomainNotFoundException("booking.is.not.found", oldBooking.getBookingDate().toString(), oldBooking.getStartTime().toString(), oldBooking.getCustomer().getId().toString());
-        }
-        manageAndSaveCustomerOfBooking(oldBookingList, null);
-        addBooking(newBooking, staffIdList, customerId);
+        bookingUpdateService.update(oldBooking, newBooking, staffIdList, customerId);
         LOGGER.info("Bookings are updated. Booking info: " + oldBooking + " customerId: " + customerId);
-    }
-
-    private void checkAllStaffAreInTheSameVehicle(List<Long> staffIdList) {
-        List<Staff> staffList = staffService.findByIdList(staffIdList);
-        if (staffList.isEmpty()) {
-            throw new CleaningAppDomainNotFoundException("staffs.are.not.found", staffIdList.toString());
-        }
-        boolean allVehiclesAreTheSame = staffList.stream().map(Staff::getVehicle).map(Vehicle::getLicencePlate).distinct().count() == 1;
-        if (!allVehiclesAreTheSame) {
-            throw new CleaningAppBusinessException("staffs.are.not.in.the.same.vehicle");
-        }
-    }
-
-    private void prepareAndSaveBookings(Booking booking, Long customerId, List<Long> staffIdList) {
-        List<Booking> bookingList = bookingRepository.findByBookingDateAndStaffInAndStartTimeBetweenAndCustomerIsNull(
-                booking.getBookingDate(), staffIdList, booking.getStartTime(), booking.getEndTime());
-        checkBookingIsAvailable(booking, bookingList, staffIdList.size());
-        manageAndSaveCustomerOfBooking(bookingList, Customer.from(customerId));
-    }
-
-    private void checkBookingIsAvailable(Booking booking, List<Booking> bookingList, Integer staffSize) {
-        if (bookingList.isEmpty() || ((bookingList.size() / staffSize) < (booking.getEndTime().getHour() - booking.getStartTime().getHour()))) {
-            throw new CleaningAppBusinessException("booking.is.not.available", booking.getBookingDate().toString(), booking.getStartTime().toString());
-        }
-    }
-
-    private void manageAndSaveCustomerOfBooking(List<Booking> bookingList, Customer customer) {
-        bookingList.forEach(bookingDB -> bookingDB.setCustomer(customer));
-        bookingRepository.saveAll(bookingList);
     }
 
 }
