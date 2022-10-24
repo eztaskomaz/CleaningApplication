@@ -1,5 +1,6 @@
 package com.justlife.cleaning.service;
 
+import com.justlife.cleaning.common.exception.CleaningAppBusinessException;
 import com.justlife.cleaning.model.Customer;
 import com.justlife.cleaning.model.dto.CustomerDTO;
 import com.justlife.cleaning.repository.CustomerRepository;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,6 +26,7 @@ public class CustomerService {
 
     @Transactional
     public void add(Customer customer) {
+        checkCustomerIsAlreadyExists(customer);
         customerRepository.save(customer);
         LOGGER.info("Customer is saved. Customer: " + customer);
     }
@@ -32,6 +35,13 @@ public class CustomerService {
     public List<CustomerDTO> list() {
         List<Customer> customerList = customerRepository.findAll();
         return customerList.stream().map(CustomerDTO::from).collect(Collectors.toList());
+    }
+
+    private void checkCustomerIsAlreadyExists(Customer customer) {
+        Optional<Customer> optionalCustomer = customerRepository.findByEmail(customer.getEmail());
+        if(optionalCustomer.isEmpty()) {
+            throw new CleaningAppBusinessException("customer.is.already.available", customer.getEmail());
+        }
     }
 
 }
