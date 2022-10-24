@@ -1,0 +1,64 @@
+###
+POST http://localhost:8080/availability/findAvailableTimes
+Content-Type: application/json
+
+{
+  "bookingDate": "2022-11-01",
+  "page": 0,
+  "size": 10
+}
+
+###
+POST http://localhost:8080/availability/checkTimeSlotAvailable
+Content-Type: application/json
+
+{
+  "bookingDate": "2022-11-01",
+  "duration": 2,
+  "page": 0,
+  "size": 10,
+  "startTime": 10
+}
+
+###
+POST http://localhost:8080/booking/addBooking
+Content-Type: application/json
+
+{
+  "bookingDate": "2022-11-01",
+  "customerId": 100001,
+  "duration": 4,
+  "staffIdList": [
+    100001, 100002
+  ],
+  "startTime": 18
+}
+
+###
+POST http://localhost:8080/booking/updateBooking
+Content-Type: application/json
+
+{
+  "bookingDate": "2022-11-01",
+  "customerId": 100001,
+  "duration": 4,
+  "staffIdList": [
+    100001, 100002
+  ],
+  "startTime": 18
+}
+
+###
+GET http://localhost:8080/customer/list
+
+
+###
+POST http://localhost:8080/customer/add
+Content-Type: application/json
+
+{
+  "address": "address",
+  "email": "email@gmail.com",
+  "name": "name",
+  "surname": "surname"
+}
