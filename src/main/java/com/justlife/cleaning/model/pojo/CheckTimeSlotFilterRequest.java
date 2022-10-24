@@ -20,7 +20,7 @@ public class CheckTimeSlotFilterRequest {
     public CheckTimeSlotFilterRequest() {
     }
 
-    public static CheckTimeSlotFilterRequest from (CheckTimeSlotDTO checkTimeSlotDTO) {
+    public static CheckTimeSlotFilterRequest from(CheckTimeSlotDTO checkTimeSlotDTO) {
         CheckTimeSlotFilterRequest checkTimeSlotFilterRequest = new CheckTimeSlotFilterRequest();
         checkTimeSlotFilterRequest.setBookingDate(checkTimeSlotDTO.getBookingDate());
         checkTimeSlotFilterRequest.setStartTime(LocalTime.of(checkTimeSlotDTO.getStartTime(), 0));

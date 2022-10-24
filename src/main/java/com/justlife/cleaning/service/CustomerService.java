@@ -39,7 +39,7 @@ public class CustomerService {
 
     private void checkCustomerIsAlreadyExists(Customer customer) {
         Optional<Customer> optionalCustomer = customerRepository.findByEmail(customer.getEmail());
-        if(optionalCustomer.isPresent()) {
+        if (optionalCustomer.isPresent()) {
             throw new CleaningAppBusinessException("customer.is.already.available", customer.getEmail());
         }
     }

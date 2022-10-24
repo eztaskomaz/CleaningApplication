@@ -2,7 +2,10 @@ package com.justlife.cleaning.service;
 
 import com.justlife.cleaning.common.exception.CleaningAppBusinessException;
 import com.justlife.cleaning.common.exception.CleaningAppDomainNotFoundException;
-import com.justlife.cleaning.model.*;
+import com.justlife.cleaning.model.Booking;
+import com.justlife.cleaning.model.Customer;
+import com.justlife.cleaning.model.Staff;
+import com.justlife.cleaning.model.Vehicle;
 import com.justlife.cleaning.model.pojo.CheckTimeSlotFilterRequest;
 import com.justlife.cleaning.repository.BookingRepository;
 import org.slf4j.Logger;
@@ -73,7 +76,7 @@ public class BookingService {
 
     private void checkAllStaffAreInTheSameVehicle(List<Long> staffIdList) {
         List<Staff> staffList = staffService.findByIdList(staffIdList);
-        if(staffList.isEmpty()) {
+        if (staffList.isEmpty()) {
             throw new CleaningAppDomainNotFoundException("staffs.are.not.found", staffIdList.toString());
         }
         boolean allVehiclesAreTheSame = staffList.stream().map(Staff::getVehicle).map(Vehicle::getLicencePlate).distinct().count() == 1;
@@ -90,7 +93,7 @@ public class BookingService {
     }
 
     private void checkBookingIsAvailable(Booking booking, List<Booking> bookingList, Integer staffSize) {
-        if (bookingList.isEmpty() || ((bookingList.size()/staffSize) < (booking.getEndTime().getHour() - booking.getStartTime().getHour()))) {
+        if (bookingList.isEmpty() || ((bookingList.size() / staffSize) < (booking.getEndTime().getHour() - booking.getStartTime().getHour()))) {
             throw new CleaningAppBusinessException("booking.is.not.available", booking.getBookingDate().toString(), booking.getStartTime().toString());
         }
     }

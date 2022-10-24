@@ -15,7 +15,7 @@ public class DurationValidator implements ConstraintValidator<DurationValid, Int
 
     @Override
     public boolean isValid(final Integer duration, final ConstraintValidatorContext constraintValidatorContext) {
-        if(Objects.nonNull(duration) && (duration == 2 || duration == 4)) {
+        if (Objects.nonNull(duration) && (duration == 2 || duration == 4)) {
             return true;
         }
         return false;
