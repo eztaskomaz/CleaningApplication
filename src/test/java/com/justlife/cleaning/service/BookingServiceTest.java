@@ -75,13 +75,13 @@ public class BookingServiceTest {
         List<Booking> bookingList = Collections.singletonList(BookingTestBuilder.buildBooking(1L));
         Page<Booking> pagedResponse = new PageImpl(bookingList);
 
-        when(bookingRepository.findByBookingDateAndStartTimeBetween(request.getBookingDate(), request.getStartTime(), endTime, PageRequest.of(request.getPage(), request.getSize(), Sort.by("id")))).thenReturn(pagedResponse);
+        when(bookingRepository.findByBookingDateAndStartTimeBetweenAndCustomerIsNull(request.getBookingDate(), request.getStartTime(), endTime, PageRequest.of(request.getPage(), request.getSize(), Sort.by("id")))).thenReturn(pagedResponse);
 
         // when
         Page<Booking> bookingPage = bookingService.findByGivenTimeSlot(request);
 
         // then
-        verify(bookingRepository).findByBookingDateAndStartTimeBetween(request.getBookingDate(), request.getStartTime(), endTime, PageRequest.of(request.getPage(), request.getSize(), Sort.by("id")));
+        verify(bookingRepository).findByBookingDateAndStartTimeBetweenAndCustomerIsNull(request.getBookingDate(), request.getStartTime(), endTime, PageRequest.of(request.getPage(), request.getSize(), Sort.by("id")));
         assertThat(bookingPage.getContent().size()).isEqualTo(1);
     }
 
@@ -107,15 +107,14 @@ public class BookingServiceTest {
         booking2.setStartTime(LocalTime.of(11, 0));
         booking2.setEndTime(LocalTime.of(12, 0));
         List<Booking> bookingList = Arrays.asList(booking1, booking2);
-        List<Long> staffIdList = Arrays.asList(1L, 2L);
+        List<Long> staffIdList = Arrays.asList(1L);
         Long customerId = 123L;
 
         Staff staff1 = StaffTestBuilder.buildStaff(1L);
-        Staff staff2 = StaffTestBuilder.buildStaff(2L);
-        List<Staff> staffList = Arrays.asList(staff1, staff2);
+        List<Staff> staffList = Arrays.asList(staff1);
 
         when(staffService.findByIdList(staffIdList)).thenReturn(staffList);
-        when(bookingRepository.findByBookingDateAndStaffInAndStartTimeBetween(
+        when(bookingRepository.findByBookingDateAndStaffInAndStartTimeBetweenAndCustomerIsNull(
                 booking.getBookingDate(), staffIdList, booking.getStartTime(), booking.getEndTime())).thenReturn(bookingList);
 
         // when
@@ -181,7 +180,7 @@ public class BookingServiceTest {
         List<Staff> staffList = Arrays.asList(staff1, staff2);
 
         when(staffService.findByIdList(staffIdList)).thenReturn(staffList);
-        when(bookingRepository.findByBookingDateAndStaffInAndStartTimeBetween(
+        when(bookingRepository.findByBookingDateAndStaffInAndStartTimeBetweenAndCustomerIsNull(
                 booking.getBookingDate(), staffIdList, booking.getStartTime(), booking.getEndTime())).thenReturn(Collections.emptyList());
 
         // when
@@ -206,7 +205,7 @@ public class BookingServiceTest {
         List<Booking> bookingList = Arrays.asList(booking1);
 
         when(staffService.findByIdList(staffIdList)).thenReturn(staffList);
-        when(bookingRepository.findByBookingDateAndStaffInAndStartTimeBetween(
+        when(bookingRepository.findByBookingDateAndStaffInAndStartTimeBetweenAndCustomerIsNull(
                 booking.getBookingDate(), staffIdList, booking.getStartTime(), booking.getEndTime())).thenReturn(bookingList);
 
         // when
@@ -237,21 +236,21 @@ public class BookingServiceTest {
         booking4.setEndTime(LocalTime.of(15, 0));
         List<Booking> updatedBookingList = Arrays.asList(booking3, booking4);
 
-        List<Long> staffIdList = Arrays.asList(1L, 1L);
+        List<Long> staffIdList = Arrays.asList(1L);
         Long customerId = 123L;
 
         Staff staff1 = StaffTestBuilder.buildStaff(1L);
         Staff staff2 = StaffTestBuilder.buildStaff(2L);
         List<Staff> staffList = Arrays.asList(staff1, staff2);
 
-        when(bookingRepository.findByBookingDateAndCustomerAndStartTimeBetween(
-                booking.getBookingDate(), booking.getCustomer().getId(), booking.getStartTime(), booking.getEndTime())).thenReturn(bookingList);
+        when(bookingRepository.findByBookingDateAndStaffIdInAndCustomer(
+                booking.getBookingDate(), staffIdList, customerId)).thenReturn(bookingList);
         when(staffService.findByIdList(staffIdList)).thenReturn(staffList);
-        when(bookingRepository.findByBookingDateAndStaffInAndStartTimeBetween(
+        when(bookingRepository.findByBookingDateAndStaffInAndStartTimeBetweenAndCustomerIsNull(
                 booking.getBookingDate(), staffIdList, booking.getStartTime(), booking.getEndTime())).thenReturn(updatedBookingList);
 
         // when
-        bookingService.updateBooking(booking, customerId);
+        bookingService.updateBooking(booking, staffIdList, customerId);
 
         //then
         verify(bookingRepository).saveAll(bookingList);
@@ -265,12 +264,13 @@ public class BookingServiceTest {
         booking.setStartTime(LocalTime.of(14, 0));
         booking.setEndTime(LocalTime.of(16, 0));
         Long customerId = 123L;
+        List<Long> staffIdList = Arrays.asList(1L, 1L);
 
-        when(bookingRepository.findByBookingDateAndCustomerAndStartTimeBetween(
-                booking.getBookingDate(), booking.getCustomer().getId(), booking.getStartTime(), booking.getEndTime())).thenReturn(Collections.emptyList());
+        when(bookingRepository.findByBookingDateAndStaffIdInAndCustomer(
+                booking.getBookingDate(), staffIdList, customerId)).thenReturn(Collections.emptyList());
 
         // when
-        Throwable throwable = catchThrowable(() -> bookingService.updateBooking(booking, customerId));
+        Throwable throwable = catchThrowable(() -> bookingService.updateBooking(booking, staffIdList, customerId));
 
         //then
         assertThat(throwable.getClass()).isEqualTo(CleaningAppDomainNotFoundException.class);

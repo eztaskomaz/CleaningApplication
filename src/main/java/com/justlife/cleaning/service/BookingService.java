@@ -39,7 +39,7 @@ public class BookingService {
     @Transactional(readOnly = true)
     public Page<Booking> findByGivenTimeSlot(CheckTimeSlotFilterRequest request) {
         LocalTime endTime = request.getStartTime().plusHours(request.getDuration()).plusMinutes(30);
-        return bookingRepository.findByBookingDateAndStartTimeBetween(
+        return bookingRepository.findByBookingDateAndStartTimeBetweenAndCustomerIsNull(
                 request.getBookingDate(), request.getStartTime(), endTime, PageRequest.of(request.getPage(), request.getSize(), Sort.by("id")));
     }
 
@@ -58,15 +58,14 @@ public class BookingService {
     }
 
     @Transactional
-    public void updateBooking(Booking booking, Long customerId) {
+    public void updateBooking(Booking booking, List<Long> staffIdList, Long customerId) {
         LOGGER.info("Bookings are updating. Booking info: " + booking + " customerId: " + customerId);
-        List<Booking> bookingList = bookingRepository.findByBookingDateAndCustomerAndStartTimeBetween(
-                booking.getBookingDate(), booking.getCustomer().getId(), booking.getStartTime(), booking.getEndTime());
+        List<Booking> bookingList = bookingRepository.findByBookingDateAndStaffIdInAndCustomer(
+                booking.getBookingDate(), staffIdList, customerId);
         if (bookingList.isEmpty()) {
             throw new CleaningAppDomainNotFoundException("booking.is.not.found", booking.getBookingDate().toString(), booking.getStartTime().toString(), booking.getCustomer().getId().toString());
         }
         manageAndSaveCustomerOfBooking(bookingList, null);
-        List<Long> staffIdList = bookingList.stream().map(Booking::getStaff).map(AbstractAuditedEntity::getId).collect(Collectors.toList());
         addBooking(booking, staffIdList, customerId);
         LOGGER.info("Bookings are updated. Booking info: " + booking + " customerId: " + customerId);
     }
@@ -83,14 +82,14 @@ public class BookingService {
     }
 
     private void prepareAndSaveBookings(Booking booking, Long customerId, List<Long> staffIdList) {
-        List<Booking> bookingList = bookingRepository.findByBookingDateAndStaffInAndStartTimeBetween(
+        List<Booking> bookingList = bookingRepository.findByBookingDateAndStaffInAndStartTimeBetweenAndCustomerIsNull(
                 booking.getBookingDate(), staffIdList, booking.getStartTime(), booking.getEndTime());
-        checkBookingIsAvailable(booking, bookingList);
+        checkBookingIsAvailable(booking, bookingList, staffIdList.size());
         manageAndSaveCustomerOfBooking(bookingList, Customer.from(customerId));
     }
 
-    private void checkBookingIsAvailable(Booking booking, List<Booking> bookingList) {
-        if (bookingList.isEmpty() || (bookingList.size() != (booking.getEndTime().getHour() - booking.getStartTime().getHour()))) {
+    private void checkBookingIsAvailable(Booking booking, List<Booking> bookingList, Integer staffSize) {
+        if (bookingList.isEmpty() || ((bookingList.size()/staffSize) < (booking.getEndTime().getHour() - booking.getStartTime().getHour()))) {
             throw new CleaningAppBusinessException("booking.is.not.available", booking.getBookingDate().toString(), booking.getStartTime().toString());
         }
     }

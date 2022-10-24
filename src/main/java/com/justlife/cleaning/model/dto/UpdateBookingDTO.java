@@ -2,10 +2,9 @@ package com.justlife.cleaning.model.dto;
 
 import com.justlife.cleaning.common.validation.DurationValid;
 
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.*;
 import java.time.LocalDate;
+import java.util.List;
 
 public class UpdateBookingDTO {
 
@@ -23,6 +22,10 @@ public class UpdateBookingDTO {
     @DurationValid
     @NotNull(message = "duration.cannot.be.empty")
     private Integer duration;
+
+    @Size(min = 1, max = 3, message = "staff.ids.size.exceeds")
+    @NotEmpty(message = "staff.ids.cannot.be.empty")
+    private List<Long> staffIdList;
 
     public UpdateBookingDTO() {
     }
@@ -57,5 +60,13 @@ public class UpdateBookingDTO {
 
     public void setDuration(Integer duration) {
         this.duration = duration;
+    }
+
+    public List<Long> getStaffIdList() {
+        return staffIdList;
+    }
+
+    public void setStaffIdList(List<Long> staffIdList) {
+        this.staffIdList = staffIdList;
     }
 }

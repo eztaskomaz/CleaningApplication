@@ -17,17 +17,18 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     @Query(value = "select * from booking where\n" +
             "        booking_date = :bookingDate and\n" +
-            "        customer_id = :customerId and\n" +
-            "        start_time >= :startTime and start_time <= :endTime", nativeQuery = true)
-    List<Booking> findByBookingDateAndCustomerAndStartTimeBetween(@Param("bookingDate") LocalDate bookingDate, @Param("customerId") Long customerId, @Param("startTime") LocalTime startTime, @Param("endTime") LocalTime endTime);
+            "        staff_id in :staffIdList and\n" +
+            "        customer_id = :customerId" , nativeQuery = true)
+    List<Booking> findByBookingDateAndStaffIdInAndCustomer(@Param("bookingDate") LocalDate bookingDate, @Param("staffIdList") List<Long> staffIdList, @Param("customerId") Long customerId);
 
     @Query(value = "select * from booking where\n" +
             "        booking_date = :bookingDate and\n" +
             "        staff_id in :staffIdList and\n" +
+            "        customer_id is null and\n" +
             "        start_time >= :startTime and start_time <= :endTime", nativeQuery = true)
-    List<Booking> findByBookingDateAndStaffInAndStartTimeBetween(@Param("bookingDate") LocalDate bookingDate, @Param("staffIdList") List<Long> staffIdList, @Param("startTime") LocalTime startTime, @Param("endTime") LocalTime endTime);
+    List<Booking> findByBookingDateAndStaffInAndStartTimeBetweenAndCustomerIsNull(@Param("bookingDate") LocalDate bookingDate, @Param("staffIdList") List<Long> staffIdList, @Param("startTime") LocalTime startTime, @Param("endTime") LocalTime endTime);
 
-    Page<Booking> findByBookingDateAndStartTimeBetween(LocalDate bookingDate, LocalTime startTime, LocalTime endTime, Pageable pageable);
+    Page<Booking> findByBookingDateAndStartTimeBetweenAndCustomerIsNull(LocalDate bookingDate, LocalTime startTime, LocalTime endTime, Pageable pageable);
 
     Page<Booking> findByBookingDateAndCustomerIsNull(LocalDate bookingDate, Pageable pageable);
 }

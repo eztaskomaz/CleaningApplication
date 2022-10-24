@@ -74,6 +74,7 @@ class BookingControllerTest {
         updateBookingDTO.setStartTime(10);
         updateBookingDTO.setDuration(2);
         updateBookingDTO.setCustomerId(1L);
+        updateBookingDTO.setStaffIdList(Arrays.asList(1L));
 
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
@@ -87,7 +88,7 @@ class BookingControllerTest {
                 .andExpect(status().isOk());
 
         //then
-        verify(bookingService).updateBooking(any(Booking.class), eq(updateBookingDTO.getCustomerId()));
+        verify(bookingService).updateBooking(any(Booking.class), eq(updateBookingDTO.getStaffIdList()), eq(updateBookingDTO.getCustomerId()));
     }
 
 }

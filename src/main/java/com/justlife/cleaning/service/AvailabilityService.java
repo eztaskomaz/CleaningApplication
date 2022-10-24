@@ -2,6 +2,7 @@ package com.justlife.cleaning.service;
 
 import com.justlife.cleaning.common.exception.CleaningAppBusinessException;
 import com.justlife.cleaning.model.Booking;
+import com.justlife.cleaning.model.Staff;
 import com.justlife.cleaning.model.dto.AvailableStaffDTO;
 import com.justlife.cleaning.model.dto.AvailableStaffTimeDTO;
 import com.justlife.cleaning.model.pageable.PageableResult;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -42,11 +44,12 @@ public class AvailabilityService {
         if (bookingList.isEmpty()) {
             throw new CleaningAppBusinessException("booking.is.not.available", request.getBookingDate().toString(), request.getStartTime().toString());
         }
+        Set<Staff> staffSet = bookingList.getContent().stream().map(Booking::getStaff).collect(Collectors.toSet());
         return new PageableResult<>(
                 bookingList.getTotalElements(),
                 request.getPage(),
                 request.getSize(),
-                bookingList.getContent().stream().map(Booking::getStaff).map(AvailableStaffDTO::from).collect(Collectors.toList())
+                staffSet.stream().map(AvailableStaffDTO::from).collect(Collectors.toList())
         );
     }
 

@@ -28,7 +28,7 @@ public class BookingController {
 
     @PostMapping("/updateBooking")
     public void updateBooking(@RequestBody @Valid UpdateBookingDTO updateBookingDTO) {
-        bookingService.updateBooking(BookingBuilder.buildByUpdateBookingDTO(updateBookingDTO), updateBookingDTO.getCustomerId());
+        bookingService.updateBooking(BookingBuilder.buildByUpdateBookingDTO(updateBookingDTO), updateBookingDTO.getStaffIdList(), updateBookingDTO.getCustomerId());
     }
 
 }

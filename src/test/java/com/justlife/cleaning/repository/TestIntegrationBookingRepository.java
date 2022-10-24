@@ -26,8 +26,8 @@ public class TestIntegrationBookingRepository extends AbstractIntegrationTest {
         LocalDate bookingDate = LocalDate.of(2022, 11, 1);
         LocalTime startTime = LocalTime.of(12, 00, 00);
         LocalTime endTime = LocalTime.of(14, 00, 00);
-        List<Booking> bookingList = bookingRepositoryRepository.findByBookingDateAndCustomerAndStartTimeBetween(
-                bookingDate, 100001L, startTime, endTime);
+        List<Booking> bookingList = bookingRepositoryRepository.findByBookingDateAndStaffIdInAndCustomer(
+                bookingDate, Arrays.asList(100001L), 100001L);
 
         assertThat(bookingList.size()).isEqualTo(3);
     }
@@ -35,23 +35,23 @@ public class TestIntegrationBookingRepository extends AbstractIntegrationTest {
     @Test
     public void test_find_by_booking_date_and_staff_and_start_time_between() {
         LocalDate bookingDate = LocalDate.of(2022, 11, 1);
-        LocalTime startTime = LocalTime.of(12, 00, 00);
-        LocalTime endTime = LocalTime.of(14, 00, 00);
-        List<Booking> bookingList = bookingRepositoryRepository.findByBookingDateAndStaffInAndStartTimeBetween(
+        LocalTime startTime = LocalTime.of(14, 00, 00);
+        LocalTime endTime = LocalTime.of(16, 00, 00);
+        List<Booking> bookingList = bookingRepositoryRepository.findByBookingDateAndStaffInAndStartTimeBetweenAndCustomerIsNull(
                 bookingDate, Arrays.asList(100001L), startTime, endTime);
 
-        assertThat(bookingList.size()).isEqualTo(3);
+        assertThat(bookingList.size()).isEqualTo(1);
     }
 
     @Test
     public void test_find_by_booking_date_and_start_time_between() {
         LocalDate bookingDate = LocalDate.of(2022, 11, 1);
-        LocalTime startTime = LocalTime.of(12, 00, 00);
-        LocalTime endTime = LocalTime.of(14, 00, 00);
-        Page<Booking> bookingList = bookingRepositoryRepository.findByBookingDateAndStartTimeBetween(
+        LocalTime startTime = LocalTime.of(15, 00, 00);
+        LocalTime endTime = LocalTime.of(17, 00, 00);
+        Page<Booking> bookingList = bookingRepositoryRepository.findByBookingDateAndStartTimeBetweenAndCustomerIsNull(
                 bookingDate, startTime, endTime, PageRequest.of(0, 10));
 
-        assertThat(bookingList.getContent().size()).isEqualTo(3);
+        assertThat(bookingList.getContent().size()).isEqualTo(1);
     }
 
     @Test
