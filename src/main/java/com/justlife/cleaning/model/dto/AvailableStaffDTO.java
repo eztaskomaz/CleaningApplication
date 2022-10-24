@@ -8,6 +8,7 @@ public class AvailableStaffDTO {
     private String surname;
     private Integer age;
     private String gender;
+    private String vehicleLicencePlate;
 
     public AvailableStaffDTO() {
     }
@@ -18,6 +19,7 @@ public class AvailableStaffDTO {
         availableStaffDTO.setSurname(staff.getSurname());
         availableStaffDTO.setAge(staff.getAge());
         availableStaffDTO.setGender(staff.getGender().name());
+        availableStaffDTO.setVehicleLicencePlate(staff.getVehicle().getLicencePlate());
         return availableStaffDTO;
     }
 
@@ -51,5 +53,13 @@ public class AvailableStaffDTO {
 
     public void setGender(String gender) {
         this.gender = gender;
+    }
+
+    public String getVehicleLicencePlate() {
+        return vehicleLicencePlate;
+    }
+
+    public void setVehicleLicencePlate(String vehicleLicencePlate) {
+        this.vehicleLicencePlate = vehicleLicencePlate;
     }
 }

@@ -16,7 +16,7 @@ public class Booking extends AbstractAuditedEntity {
     @JoinColumn(name = "CUSTOMER_ID", nullable = false)
     private Customer customer;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "STAFF_ID", nullable = false)
     private Staff staff;
 

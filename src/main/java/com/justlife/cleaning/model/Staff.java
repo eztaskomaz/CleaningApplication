@@ -19,7 +19,7 @@ public class Staff extends AbstractAuditedEntity {
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "VEHICLE_ID", nullable = false)
     private Vehicle vehicle;
 
