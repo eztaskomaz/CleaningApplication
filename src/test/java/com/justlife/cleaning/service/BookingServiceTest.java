@@ -223,9 +223,12 @@ public class BookingServiceTest {
         oldBooking.setEndTime(LocalTime.of(12, 0));
         Booking booking1 = BookingTestBuilder.buildBooking(1L);
         Booking booking2 = BookingTestBuilder.buildBooking(2L);
+        Booking booking5 = BookingTestBuilder.buildBooking(3L);
         booking2.setStartTime(LocalTime.of(11, 0));
         booking2.setEndTime(LocalTime.of(12, 0));
-        List<Booking> oldBookingList = Arrays.asList(booking1, booking2);
+        booking5.setStartTime(LocalTime.of(12, 0));
+        booking5.setEndTime(LocalTime.of(13, 0));
+        List<Booking> oldBookingList = Arrays.asList(booking1, booking2, booking5);
 
         Booking updatedBooking = BookingTestBuilder.buildBooking(1L);
         updatedBooking.setStartTime(LocalTime.of(14, 0));
@@ -242,8 +245,7 @@ public class BookingServiceTest {
         Long customerId = 123L;
 
         Staff staff1 = StaffTestBuilder.buildStaff(1L);
-        Staff staff2 = StaffTestBuilder.buildStaff(2L);
-        List<Staff> staffList = Arrays.asList(staff1, staff2);
+        List<Staff> staffList = Arrays.asList(staff1);
 
         when(bookingRepository.findByBookingDateAndStaffIdInAndCustomerAndStartTimeBetween(
                 oldBooking.getBookingDate(), staffIdList, customerId, oldBooking.getStartTime(), oldBooking.getEndTime()))
