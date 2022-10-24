@@ -26,8 +26,8 @@ public class TestIntegrationBookingRepository extends AbstractIntegrationTest {
         LocalDate bookingDate = LocalDate.of(2022, 11, 1);
         LocalTime startTime = LocalTime.of(12, 00, 00);
         LocalTime endTime = LocalTime.of(14, 00, 00);
-        List<Booking> bookingList = bookingRepositoryRepository.findByBookingDateAndStaffIdInAndCustomer(
-                bookingDate, Arrays.asList(100001L), 100001L);
+        List<Booking> bookingList = bookingRepositoryRepository.findByBookingDateAndStaffIdInAndCustomerAndStartTimeBetween(
+                bookingDate, Arrays.asList(100001L), 100001L, startTime, endTime);
 
         assertThat(bookingList.size()).isEqualTo(3);
     }

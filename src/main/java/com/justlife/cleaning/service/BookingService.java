@@ -58,16 +58,17 @@ public class BookingService {
     }
 
     @Transactional
-    public void updateBooking(Booking booking, List<Long> staffIdList, Long customerId) {
-        LOGGER.info("Bookings are updating. Booking info: " + booking + " customerId: " + customerId);
-        List<Booking> bookingList = bookingRepository.findByBookingDateAndStaffIdInAndCustomer(
-                booking.getBookingDate(), staffIdList, customerId);
-        if (bookingList.isEmpty()) {
-            throw new CleaningAppDomainNotFoundException("booking.is.not.found", booking.getBookingDate().toString(), booking.getStartTime().toString(), booking.getCustomer().getId().toString());
+    public void updateBooking(Booking oldBooking, Booking newBooking, List<Long> staffIdList, Long customerId) {
+        LOGGER.info("Bookings are updating. Booking info: " + oldBooking + " customerId: " + customerId);
+        List<Booking> oldBookingList = bookingRepository.findByBookingDateAndStaffIdInAndCustomerAndStartTimeBetween(
+                oldBooking.getBookingDate(), staffIdList, customerId, oldBooking.getStartTime(), oldBooking.getEndTime());
+        Integer oldDurationSlot = oldBooking.getEndTime().minusHours(oldBooking.getStartTime().getHour()).getHour() + 1;
+        if (oldBookingList.isEmpty() || oldBookingList.size() != (staffIdList.size() * oldDurationSlot)) {
+            throw new CleaningAppDomainNotFoundException("booking.is.not.found", oldBooking.getBookingDate().toString(), oldBooking.getStartTime().toString(), oldBooking.getCustomer().getId().toString());
         }
-        manageAndSaveCustomerOfBooking(bookingList, null);
-        addBooking(booking, staffIdList, customerId);
-        LOGGER.info("Bookings are updated. Booking info: " + booking + " customerId: " + customerId);
+        manageAndSaveCustomerOfBooking(oldBookingList, null);
+        addBooking(newBooking, staffIdList, customerId);
+        LOGGER.info("Bookings are updated. Booking info: " + oldBooking + " customerId: " + customerId);
     }
 
     private void checkAllStaffAreInTheSameVehicle(List<Long> staffIdList) {

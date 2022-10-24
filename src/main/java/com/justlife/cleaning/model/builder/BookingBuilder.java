@@ -39,10 +39,17 @@ public class BookingBuilder {
                 addBookingDTO.getDuration());
     }
 
-    public static Booking buildByUpdateBookingDTO(UpdateBookingDTO updateBookingDTO) {
+    public static Booking buildNewBookingByUpdateBookingDTO(UpdateBookingDTO updateBookingDTO) {
         return buildBookingWithBookingDateAndTime(
                 updateBookingDTO.getBookingDate(),
-                updateBookingDTO.getStartTime(),
-                updateBookingDTO.getDuration());
+                updateBookingDTO.getNewStartTime(),
+                updateBookingDTO.getNewDuration());
+    }
+
+    public static Booking buildOldBookingByUpdateBookingDTO(UpdateBookingDTO updateBookingDTO) {
+        return buildBookingWithBookingDateAndTime(
+                updateBookingDTO.getBookingDate(),
+                updateBookingDTO.getOldStartTime(),
+                updateBookingDTO.getOldDuration());
     }
 }

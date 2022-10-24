@@ -18,8 +18,9 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     @Query(value = "select * from booking where\n" +
             "        booking_date = :bookingDate and\n" +
             "        staff_id in :staffIdList and\n" +
-            "        customer_id = :customerId" , nativeQuery = true)
-    List<Booking> findByBookingDateAndStaffIdInAndCustomer(@Param("bookingDate") LocalDate bookingDate, @Param("staffIdList") List<Long> staffIdList, @Param("customerId") Long customerId);
+            "        customer_id = :customerId and\n" +
+            "        start_time >= :startTime and start_time <= :endTime", nativeQuery = true)
+    List<Booking> findByBookingDateAndStaffIdInAndCustomerAndStartTimeBetween(@Param("bookingDate") LocalDate bookingDate, @Param("staffIdList") List<Long> staffIdList, @Param("customerId") Long customerId, @Param("startTime") LocalTime startTime, @Param("endTime") LocalTime endTime);
 
     @Query(value = "select * from booking where\n" +
             "        booking_date = :bookingDate and\n" +

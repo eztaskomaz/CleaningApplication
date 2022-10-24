@@ -17,11 +17,20 @@ public class UpdateBookingDTO {
     @NotNull(message = "start.time.cannot.be.empty")
     @Min(value = 8, message = "start.time.cannot.be.smaller")
     @Max(value = 20, message = "start.time.cannot.be.bigger")
-    private Integer startTime;
+    private Integer oldStartTime;
 
     @DurationValid
     @NotNull(message = "duration.cannot.be.empty")
-    private Integer duration;
+    private Integer oldDuration;
+
+    @NotNull(message = "start.time.cannot.be.empty")
+    @Min(value = 8, message = "start.time.cannot.be.smaller")
+    @Max(value = 20, message = "start.time.cannot.be.bigger")
+    private Integer newStartTime;
+
+    @DurationValid
+    @NotNull(message = "duration.cannot.be.empty")
+    private Integer newDuration;
 
     @Size(min = 1, max = 3, message = "staff.ids.size.exceeds")
     @NotEmpty(message = "staff.ids.cannot.be.empty")
@@ -46,20 +55,20 @@ public class UpdateBookingDTO {
         this.bookingDate = bookingDate;
     }
 
-    public Integer getStartTime() {
-        return startTime;
+    public Integer getNewStartTime() {
+        return newStartTime;
     }
 
-    public void setStartTime(Integer startTime) {
-        this.startTime = startTime;
+    public void setNewStartTime(Integer newStartTime) {
+        this.newStartTime = newStartTime;
     }
 
-    public Integer getDuration() {
-        return duration;
+    public Integer getNewDuration() {
+        return newDuration;
     }
 
-    public void setDuration(Integer duration) {
-        this.duration = duration;
+    public void setNewDuration(Integer newDuration) {
+        this.newDuration = newDuration;
     }
 
     public List<Long> getStaffIdList() {
@@ -68,5 +77,21 @@ public class UpdateBookingDTO {
 
     public void setStaffIdList(List<Long> staffIdList) {
         this.staffIdList = staffIdList;
+    }
+
+    public Integer getOldStartTime() {
+        return oldStartTime;
+    }
+
+    public void setOldStartTime(Integer oldStartTime) {
+        this.oldStartTime = oldStartTime;
+    }
+
+    public Integer getOldDuration() {
+        return oldDuration;
+    }
+
+    public void setOldDuration(Integer oldDuration) {
+        this.oldDuration = oldDuration;
     }
 }

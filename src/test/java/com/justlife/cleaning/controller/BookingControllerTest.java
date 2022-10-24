@@ -71,8 +71,10 @@ class BookingControllerTest {
         //given
         UpdateBookingDTO updateBookingDTO = new UpdateBookingDTO();
         updateBookingDTO.setBookingDate(LocalDate.of(2022, 10, 30));
-        updateBookingDTO.setStartTime(10);
-        updateBookingDTO.setDuration(2);
+        updateBookingDTO.setNewStartTime(10);
+        updateBookingDTO.setNewDuration(2);
+        updateBookingDTO.setOldStartTime(8);
+        updateBookingDTO.setOldDuration(2);
         updateBookingDTO.setCustomerId(1L);
         updateBookingDTO.setStaffIdList(Arrays.asList(1L));
 
@@ -88,7 +90,7 @@ class BookingControllerTest {
                 .andExpect(status().isOk());
 
         //then
-        verify(bookingService).updateBooking(any(Booking.class), eq(updateBookingDTO.getStaffIdList()), eq(updateBookingDTO.getCustomerId()));
+        verify(bookingService).updateBooking(any(Booking.class), any(Booking.class), eq(updateBookingDTO.getStaffIdList()), eq(updateBookingDTO.getCustomerId()));
     }
 
 }

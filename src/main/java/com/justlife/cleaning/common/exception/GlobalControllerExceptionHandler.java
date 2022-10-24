@@ -44,7 +44,7 @@ public class GlobalControllerExceptionHandler {
         ErrorDTO errorDTO = new ErrorDTO();
         errorDTO.setException("CleaningAppBusinessException");
         errorDTO.addError(getErrorDetailDTO(exception));
-        LOGGER.error("CleaningAppBusinessException Caused By:{}", errorDTO.toString());
+        LOGGER.error("CleaningAppBusinessException Caused By:{}", errorDTO);
         return new ResponseEntity<>(errorDTO, HttpStatus.BAD_REQUEST);
     }
     @ExceptionHandler(CleaningAppDomainNotFoundException.class)
@@ -52,7 +52,7 @@ public class GlobalControllerExceptionHandler {
         ErrorDTO errorDTO = new ErrorDTO();
         errorDTO.setException("CleaningAppDomainNotFoundException");
         errorDTO.addError(getErrorDetailDTO(exception));
-        LOGGER.error("CleaningAppDomainNotFoundException Caused By:{}", errorDTO.toString());
+        LOGGER.error("CleaningAppDomainNotFoundException Caused By:{}", errorDTO);
         return new ResponseEntity<>(errorDTO, HttpStatus.NOT_FOUND);
     }
 
